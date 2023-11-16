@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic-Tac-Toe</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: linear-gradient(to bottom right, #48b1bf, #2a6f8c);
+            color: white;
+        }
+
+        #board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            gap: 5px;
+            margin-bottom: 20px;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            font-size: 2em;
+            border: 2px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            background: linear-gradient(to bottom right, #d1d1d1, #b0b0b0);
+            color: #333;
+        }
+
+        .cell:hover {
+            background: linear-gradient(to bottom right, #bbb, #999);
+        }
+
+        #status {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+
+        #reset {
+            padding: 10px 20px;
+            font-size: 1em;
+            background: linear-gradient(to bottom right, #ff7777, #d94b4b);
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+
+        #reset:hover {
+            background: linear-gradient(to bottom right, #d94b4b, #a52e2e);
+        }
+    </style>
+</head>
+<body>
+    <h1>Tic-Tac-Toe</h1>
+    <div id="status">Player X's turn</div>
+    <div id="board"></div>
+    <button id="reset">Reset Game</button>
+
+    <script>
+        const board = document.getElementById('board');
+        const status = document.getElementById('status');
+        const resetButton = document.getElementById('reset');
+        const cells = [];
+
+        let currentPlayer = 'X';
+        let gameBoard = ['', '', '', '', '', '', '', '', ''];
+        let gameActive = true;
+        let moves = 0;
+
+        function checkWinner() {
+            const winningCombos = [
+                [0, 1, 2],
+                [3, 4, 5],
+                [6, 7, 8],
+                [0, 3, 6],
+                [1, 4, 7],
+                [2, 5, 8],
+                [0, 4, 8],
+                [2, 4, 6],
+            ];
+
+            for (const combo of winningCombos) {
+                const [a, b, c] = combo;
+                if (gameBoard[a] && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c]) {
+                    gameActive = false;
+                    cells[a].style.backgroundColor = cells[b].style.backgroundColor = cells[c].style.backgroundColor = '#6aff6a';
+                    alert(`Player ${currentPlayer} wins!`);
+                    return;
+                }
+            }
+
+            if (!gameBoard.includes('') && gameActive) {
+                gameActive = false;
+                alert("It's a draw!");
+            }
+        }
+
+        function handleCellClick(index) {
+            if (!gameActive || gameBoard[index] !== '') {
+                return;
+            }
+
+            gameBoard[index] = currentPlayer;
+            cells[index].textContent = currentPlayer;
+            moves++;
+
+            checkWinner();
+
+            if (gameActive) {
+                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                status.textContent = `Player ${currentPlayer}'s turn`;
+            }
+        }
+
+        function resetGame() {
+            gameBoard = ['', '', '', '', '', '', '', '', ''];
+            gameActive = true;
+            currentPlayer = 'X';
+            status.textContent = "Player X's turn";
+            moves = 0;
+
+            cells.forEach((cell, index) => {
+                cell.textContent = '';
+                cell.style.backgroundColor = 'transparent';
+            });
+        }
+
+        function createBoard() {
+            for (let i = 0; i < 9; i++) {
+                const cell = document.createElement('div');
+                cell.classList.add('cell');
+                cell.addEventListener('click', () => handleCellClick(i));
+                cells.push(cell);
+                board.appendChild(cell);
+            }
+        }
+
+        createBoard();
+        resetButton.addEventListener('click', resetGame);
+    </script>
+</body>
+</html>
